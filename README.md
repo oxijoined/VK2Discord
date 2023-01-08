@@ -1,2 +1,2 @@
 # VK2Discord
-![image](https://user-images.githubusercontent.com/83812355/211193552-99f2ca46-1c60-48f6-9b1b-daf1976572e4.png)
+![image](https://user-images.githubusercontent.com/83812355/211193846-d52ad1c7-db26-48c1-9048-ba1b20886524.png)
