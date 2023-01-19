@@ -32,16 +32,13 @@ def deleteWebHook(id: int, token: str):
         time.sleep(sleepTime)
         time.sleep(int(sleepTime) + 2)
         deleteWebHook(id, token)
-    else:
-        pass
 
 
 def urlToBase64(url: str):
     response = requests.get(url)
     binary_content = response.content
     base64_data = base64.b64encode(binary_content)
-    base64_str = f'data:image/png;base64,{base64_data.decode("utf-8")}'
-    return base64_str
+    return f'data:image/png;base64,{base64_data.decode("utf-8")}'
 
 
 def createWebhook(name: str, avatar: str):
@@ -56,18 +53,17 @@ def createWebhook(name: str, avatar: str):
         headers=headers,
         json=data,
     )
-    if "The resource is being rate limited." in str(request.text):
-        sleepTime = json.loads(request.text)["retry_after"]
-        print(f"[!] Sleeping for {sleepTime}")
-        time.sleep(int(sleepTime) + 2)
-        token, WebhookID = createWebhook(name, avatar)
-        return token, WebhookID
-    else:
+    if "The resource is being rate limited." not in str(request.text):
         return json.loads(request.text)["token"], json.loads(request.text)["id"]
+    sleepTime = json.loads(request.text)["retry_after"]
+    print(f"[!] Sleeping for {sleepTime}")
+    time.sleep(int(sleepTime) + 2)
+    token, WebhookID = createWebhook(name, avatar)
+    return token, WebhookID
 
 
 def sendToDiscord(webhook: str, text: str, WebhookID: int, photoURL=None):
-    if photoURL == None:
+    if photoURL is None:
         webhook_ = DiscordWebhook(
             url=f"https://discord.com/api/webhooks/{WebhookID}/{webhook}",
             content=text,
@@ -100,15 +96,13 @@ def main():
             userMessage = event.message.text
             if userMessage == "" and event.message.attachments == []:
                 break
-            elif userMessage == "" and event.message.attachments != []:
+            elif userMessage == "":
                 typeOfContent = event.message.attachments[0]["type"]
                 if typeOfContent == "photo":
                     photoURLSent = event.message.attachments[0]["photo"]["sizes"][5][
                         "url"
                     ]
-                if typeOfContent == "video":
-                    pass
-            elif userMessage != "":
+            else:
                 typeOfContent = "text"
 
             if hasPhoto == 1:
@@ -120,10 +114,10 @@ def main():
             token, WebhookID = createWebhook(
                 f"{userFirstName} {userLastName}", photoBase64
             )
-            if typeOfContent == "text":
-                sendToDiscord(token, userMessage, WebhookID)
-            elif typeOfContent == "photo":
+            if typeOfContent == "photo":
                 sendToDiscord(token, userMessage, WebhookID, photoURLSent)
+            elif typeOfContent == "text":
+                sendToDiscord(token, userMessage, WebhookID)
             deleteWebHook(WebhookID, token)
 
             print(f"{userFirstName} {userLastName}: {userMessage}")
