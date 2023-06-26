@@ -10,10 +10,10 @@ from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 token = "" # VK Bot token (With longpool enabled)
 discordToken = "" # Discord token with permission to manage webhooks
 discordChannelID = 0 # Discord channel ID where messages will be sent
-vkChatID = 0
+vkClubID = 0
 
 vk = vk_api.VkApi(token=token)
-longpoll = VkBotLongPoll(vk, vkChatID)
+longpoll = VkBotLongPoll(vk, vkClubID)
 
 
 def deleteWebHook(id: int, token: str):
