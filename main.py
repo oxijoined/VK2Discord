@@ -7,9 +7,9 @@ import vk_api
 from discord_webhook import DiscordEmbed, DiscordWebhook
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 
-token = "" # VK Bot token (With longpool enabled)
-discordToken = "" # Discord token with permission to manage webhooks
-discordChannelID = 0 # Discord channel ID where messages will be sent
+token = ""  # VK Bot token (With longpool enabled) v 5.131
+discordToken = ""  # Discord token with permission to manage webhooks
+discordChannelID = 0  # Discord channel ID where messages will be sent
 vkClubID = 0
 
 vk = vk_api.VkApi(token=token)
@@ -17,7 +17,6 @@ longpoll = VkBotLongPoll(vk, vkClubID)
 
 
 def deleteWebHook(id: int, token: str):
-
     headers = {
         "Authorization": discordToken,
         "Content-Type": "application/json",
@@ -26,7 +25,7 @@ def deleteWebHook(id: int, token: str):
     request = requests.delete(
         f"https://discord.com/api/webhooks/{id}/{token}", headers=headers
     )
-    if "The resource is being rate limited." in str(request.text):
+    if "The resource is being rate limited." in request.text:
         sleepTime = json.loads(request.text)["retry_after"]
         print(f"[!] Sleeping for {sleepTime}")
         time.sleep(sleepTime)
@@ -42,9 +41,8 @@ def urlToBase64(url: str):
 
 
 def createWebhook(name: str, avatar: str):
-
     headers = {
-        "Authorization": discordToken,
+        "Authorization": f"Bot {discordToken}",
         "Content-Type": "application/json",
     }
     data = {"name": name, "avatar": avatar}
@@ -53,7 +51,7 @@ def createWebhook(name: str, avatar: str):
         headers=headers,
         json=data,
     )
-    if "The resource is being rate limited." not in str(request.text):
+    if "The resource is being rate limited." not in request.text:
         return json.loads(request.text)["token"], json.loads(request.text)["id"]
     sleepTime = json.loads(request.text)["retry_after"]
     print(f"[!] Sleeping for {sleepTime}")
